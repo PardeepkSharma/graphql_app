@@ -13,3 +13,16 @@ export const GET_ALL_QUOTES = gql`
     }
   }
 `;
+
+export const GET_MY_PROFILE = gql`
+  query getUser {
+    getUser {
+      firstName
+      lastName
+      email
+      quotes {
+        quote
+      }
+    }
+  }
+`;

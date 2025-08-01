@@ -1,10 +1,17 @@
 export const typeDefs = `#graphql
+  type Query {
+    getAllUser: [User]
+    getUser:User
+    getQuotes:[Quote]
+  }
+
   type User {
     _id: ID!
     firstName: String!
     lastName: String!
     email:String!
     password:String!
+    quotes:[Quote!]
   }
   type Quote {
     _id: ID!
@@ -12,11 +19,7 @@ export const typeDefs = `#graphql
     user:User!
   }
 
-  type Query {
-    getAllUser: [User]
-    getUser(_id:String!):User
-    getQuotes:[Quote]
-  }
+  
 
   type LoginResponse{
     access_token:String,

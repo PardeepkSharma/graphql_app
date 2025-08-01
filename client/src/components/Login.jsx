@@ -6,7 +6,12 @@ import { LOGIN } from "../gqlquries/mutation";
 export default function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({});
-  const [login, { data, loadind, error }] = useMutation(LOGIN);
+  const [login, { data, loadind, error }] = useMutation(LOGIN, {
+    onCompleted(data) {
+      localStorage.setItem("access_token", data.login.access_token);
+      navigate("/");
+    },
+  });
 
   const handleChange = (e) => {
     setFormData({
@@ -17,23 +22,17 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
     try {
-      const { data } = await login({
+      await login({
         variables: { email: formData.email, password: formData.password },
       });
-
-      if (data.login) {
-        localStorage.setItem("access_token", data.login.access_token);
-      }
-      console.log(data);
-      navigate("/");
     } catch (error) {
       console.log("Login Error=", error);
     }
   };
   return (
     <div className="container my-container">
+      {error && <div className="red card-panel">{error.message}</div>}
       <h5>Login!!</h5>
       <form onSubmit={handleSubmit}>
         <input

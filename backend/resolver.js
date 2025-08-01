@@ -1,7 +1,7 @@
 import User from "./models/User.js";
-import Quotes from "./models/Quotes.js";
 import bcrypt, { genSalt } from "bcryptjs";
 import jwt from "jsonwebtoken";
+import Quote from "./models/Quote.js";
 
 export const resolvers = {
   Query: {
@@ -9,16 +9,23 @@ export const resolvers = {
       const users = await User.find();
       return users;
     },
-    async getUser(_, args) {
-      const user = await User.findOne({ _id: args._id });
+    async getUser(_, args, context) {
+      if (!context._id) {
+        return new Error("Unauthorized!");
+      }
+      const user = await User.findOne({ _id: context._id });
       return user;
     },
     async getQuotes() {
-      const quotes = await Quotes.find().populate("user", "-password");
+      const quotes = await Quote.find().populate("user", "-password");
       return quotes;
     },
   },
-  Quote: {},
+  User: {
+    async quotes(parent) {
+      return Quote.find({ user: parent._id });
+    },
+  },
   Mutation: {
     signUp: async (_, { input }) => {
       const { firstName, lastName, email, password } = input;
@@ -42,7 +49,6 @@ export const resolvers = {
         return new Error("User does not exist");
       }
       const password_verify = await bcrypt.compare(password, user.password);
-      console.log(password_verify);
       if (!password_verify) {
         return new Error("Invalid Credentials!");
       }
@@ -50,11 +56,10 @@ export const resolvers = {
       return { access_token, message: "Login Successfull" };
     },
     addQuotes: async (_, { quote }, context) => {
-      console.log(context._id);
       if (!context._id) {
         return new Error("Unauthorized!");
       }
-      const new_quote = await Quotes.create({
+      const new_quote = await Quote.create({
         quote: quote,
         user: context._id,
       });

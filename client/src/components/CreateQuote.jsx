@@ -1,20 +1,25 @@
 import { useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import { CREATE_QUOTE } from "../gqlquries/mutation";
+import { useNavigate } from "react-router-dom";
+import { GET_ALL_QUOTES, GET_MY_PROFILE } from "../gqlquries/qurie";
 
 export default function CreateQuote() {
   const [quote, setQuote] = useState("");
-  const [addQuotes] = useMutation(CREATE_QUOTE);
+  const navigate = useNavigate();
+  const [addQuotes] = useMutation(CREATE_QUOTE, {
+    refetchQueries: [{ query: GET_MY_PROFILE }, { query: GET_ALL_QUOTES }],
+    awaitRefetchQueries: true,
+  });
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(quote);
     try {
-      const { data } = await addQuotes({
+      await addQuotes({
         variables: {
           quote: quote,
         },
       });
-      console.log(data);
+      navigate("/profile");
     } catch (error) {
       console.log("Create Quote Error=", error);
     }
