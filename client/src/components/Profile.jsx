@@ -1,9 +1,6 @@
 import { useQuery } from "@apollo/client";
-import { useNavigate } from "react-router-dom";
 import { GET_MY_PROFILE } from "../gqlquries/qurie";
 export default function Profile() {
-  const navigate = useNavigate();
-  console.log("Profile Render");
   const { loading, error, data } = useQuery(GET_MY_PROFILE);
 
   if (loading) return <h2>Profile is loading</h2>;
