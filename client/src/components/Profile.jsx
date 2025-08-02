@@ -11,7 +11,7 @@ export default function Profile() {
       const gqlError = error.graphQLErrors?.[0];
       const code = gqlError?.extensions?.code;
 
-      if (code === 401 || gqlError?.message.includes("not authorized")) {
+      if (code === 401 || gqlError?.message.includes("UNAUTHORIZED")) {
         console.warn("Unauthorized. Redirecting to login...");
         navigate("/login");
       }
