@@ -15,8 +15,20 @@ export const GET_ALL_QUOTES = gql`
 `;
 
 export const GET_MY_PROFILE = gql`
-  query getUser {
-    getUser {
+  query getMyProfile {
+    getMyProfile {
+      firstName
+      lastName
+      email
+      quotes {
+        quote
+      }
+    }
+  }
+`;
+export const GET_USER = gql`
+  query GetUser($userId: ID!) {
+    getUser(userId: $userId) {
       firstName
       lastName
       email

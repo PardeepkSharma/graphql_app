@@ -1,7 +1,8 @@
 export const typeDefs = `#graphql
   type Query {
     getAllUser: [User]
-    getUser:User
+    getMyProfile:User
+    getUser(userId:ID!):User
     getQuotes:[Quote]
   }
 

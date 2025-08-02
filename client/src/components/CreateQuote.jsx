@@ -6,6 +6,7 @@ import { GET_ALL_QUOTES, GET_MY_PROFILE } from "../gqlquries/qurie";
 
 export default function CreateQuote() {
   const [quote, setQuote] = useState("");
+
   const navigate = useNavigate();
   const [addQuotes] = useMutation(CREATE_QUOTE, {
     refetchQueries: [{ query: GET_MY_PROFILE }, { query: GET_ALL_QUOTES }],

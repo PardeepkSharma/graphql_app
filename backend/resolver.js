@@ -2,18 +2,25 @@ import User from "./models/User.js";
 import bcrypt, { genSalt } from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Quote from "./models/Quote.js";
-
+import { config } from "dotenv";
+if (process.env.NODE_ENV !== "production") {
+  config();
+}
 export const resolvers = {
   Query: {
     async getAllUser() {
       const users = await User.find();
       return users;
     },
-    async getUser(_, args, context) {
+    async getMyProfile(_, args, context) {
       if (!context._id) {
-        return new Error("Unauthorized!");
+        return new Error("Error Unauthorized!");
       }
       const user = await User.findOne({ _id: context._id });
+      return user;
+    },
+    async getUser(_, args) {
+      const user = await User.findOne({ _id: args.userId });
       return user;
     },
     async getQuotes() {
@@ -52,7 +59,7 @@ export const resolvers = {
       if (!password_verify) {
         return new Error("Invalid Credentials!");
       }
-      const access_token = jwt.sign({ _id: user._id }, "mysecrete");
+      const access_token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
       return { access_token, message: "Login Successfull" };
     },
     addQuotes: async (_, { quote }, context) => {

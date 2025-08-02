@@ -33,7 +33,7 @@ export default function Login() {
   return (
     <div className="container my-container">
       {error && <div className="red card-panel">{error.message}</div>}
-      <h5>Login!!</h5>
+      <h5>Login</h5>
       <form onSubmit={handleSubmit}>
         <input
           type="email"

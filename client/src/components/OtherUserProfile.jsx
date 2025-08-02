@@ -1,29 +1,35 @@
+import React from "react";
 import { useQuery } from "@apollo/client";
-import { useNavigate } from "react-router-dom";
-import { GET_MY_PROFILE } from "../gqlquries/qurie";
+import { useParams } from "react-router-dom";
+import { GET_USER } from "../gqlquries/qurie";
 export default function Profile() {
-  const navigate = useNavigate();
-  console.log("Profile Render");
-  const { loading, error, data } = useQuery(GET_MY_PROFILE);
+  const { userId } = useParams();
+  const { loading, error, data } = useQuery(GET_USER, {
+    variables: {
+      userId,
+    },
+  });
 
   if (loading) return <h2>Profile is loading</h2>;
-
+  if (error) {
+    return <h5>{JSON.stringify(error.message)}</h5>;
+  }
   return (
     <div className="container my-container">
       <div className="center-align">
         <img
           className="circle"
           style={{ border: "2px solid", marginTop: "10px" }}
-          src={`https://robohash.org/${data.getMyProfile.firstName}.png?size=200x200`}
+          src={`https://robohash.org/${data.getUser.firstName}.png?size=200x200`}
           alt="pic"
         />
         <h5>
-          {data.getMyProfile.firstName} {data.getMyProfile.lastName}
+          {data.getUser.firstName} {data.getUser.lastName}
         </h5>
-        <h6>Email - {data.getMyProfile.email}</h6>
+        <h6>Email - {data.getUser.email}</h6>
       </div>
       <h3>Your quotes</h3>
-      {data.getMyProfile.quotes.map((quo, index) => {
+      {data.getUser.quotes.map((quo, index) => {
         return (
           <blockquote key={index}>
             <h6>{quo.quote}</h6>
