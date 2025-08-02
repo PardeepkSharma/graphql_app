@@ -24,7 +24,7 @@ export default function NavBar() {
                   className="red btn"
                   onClick={async () => {
                     localStorage.removeItem("access_token");
-                    await client.resetStore();
+                    await client.clearStore();
                     navigate("/login");
                   }}
                 >

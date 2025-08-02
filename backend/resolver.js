@@ -3,6 +3,7 @@ import bcrypt, { genSalt } from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Quote from "./models/Quote.js";
 import { config } from "dotenv";
+import { GraphQLError } from "graphql";
 if (process.env.NODE_ENV !== "production") {
   config();
 }
@@ -14,7 +15,12 @@ export const resolvers = {
     },
     async getMyProfile(_, args, context) {
       if (!context._id) {
-        return new Error("Error Unauthorized!");
+        console.log(context);
+        throw new GraphQLError("UNAUTHORIZED", {
+          extensions: {
+            code: 401,
+          },
+        });
       }
       const user = await User.findOne({ _id: context._id });
       return user;
@@ -53,18 +59,33 @@ export const resolvers = {
     login: async (_, { email, password }) => {
       const user = await User.findOne({ email });
       if (!user) {
-        return new Error("User does not exist");
+        throw new GraphQLError("User Not Found!", {
+          extensions: {
+            code: "NOT_FOUND",
+            http: { status: 404 },
+          },
+        });
       }
       const password_verify = await bcrypt.compare(password, user.password);
       if (!password_verify) {
-        return new Error("Invalid Credentials!");
+        throw new GraphQLError("Unauthorized", {
+          extensions: {
+            code: "UNAUTHORIZED",
+            http: { status: 401 },
+          },
+        });
       }
       const access_token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
       return { access_token, message: "Login Successfull" };
     },
     addQuotes: async (_, { quote }, context) => {
       if (!context._id) {
-        return new Error("Unauthorized!");
+        throw new GraphQLError("Unauthorized", {
+          extensions: {
+            code: "UNAUTHORIZED",
+            http: { status: 401 },
+          },
+        });
       }
       const new_quote = await Quote.create({
         quote: quote,
